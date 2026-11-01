@@ -26,16 +26,16 @@ from pytest_homeassistant_custom_component.common import (
 )
 from syrupy.assertion import SnapshotAssertion
 
-from custom_components.eheimdigital._vendor.eheimdigital.heater import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.heater import (
     EheimDigitalHeater,
 )
-from custom_components.eheimdigital._vendor.eheimdigital.types import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.types import (
     EheimDeviceType,
     EheimDigitalClientError,
     HeaterMode,
     HeaterUnit,
 )
-from custom_components.eheimdigital.const import (
+from custom_components.eheimdigital_plus.const import (
     HEATER_BIO_MODE,
     HEATER_SMART_MODE,
 )
@@ -55,9 +55,9 @@ async def test_setup_heater(
     mock_config_entry.add_to_hass(hass)
 
     with (
-        patch("custom_components.eheimdigital.PLATFORMS", [Platform.CLIMATE]),
+        patch("custom_components.eheimdigital_plus.PLATFORMS", [Platform.CLIMATE]),
         patch(
-            "custom_components.eheimdigital.coordinator.asyncio.Event",
+            "custom_components.eheimdigital_plus.coordinator.asyncio.Event",
             new=mock_event,
         ),
     ):
@@ -85,9 +85,9 @@ async def test_dynamic_new_devices(
     eheimdigital_hub_mock.return_value.devices = {}
 
     with (
-        patch("custom_components.eheimdigital.PLATFORMS", [Platform.CLIMATE]),
+        patch("custom_components.eheimdigital_plus.PLATFORMS", [Platform.CLIMATE]),
         patch(
-            "custom_components.eheimdigital.coordinator.asyncio.Event",
+            "custom_components.eheimdigital_plus.coordinator.asyncio.Event",
             new=mock_event,
         ),
     ):

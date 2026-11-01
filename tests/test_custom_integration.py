@@ -9,8 +9,8 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.loader import async_get_integration
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.eheimdigital.const import DOMAIN
-from custom_components.eheimdigital.diagnostics import (
+from custom_components.eheimdigital_plus.const import DOMAIN
+from custom_components.eheimdigital_plus.diagnostics import (
     async_get_config_entry_diagnostics,
 )
 

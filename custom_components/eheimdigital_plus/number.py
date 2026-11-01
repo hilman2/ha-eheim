@@ -186,6 +186,7 @@ GENERAL_DESCRIPTIONS: tuple[EheimDigitalNumberDescription[EheimDigitalDevice], .
         key="system_led",
         translation_key="system_led",
         entity_category=EntityCategory.CONFIG,
+        entity_registry_enabled_default=False,
         native_min_value=0,
         native_max_value=100,
         native_step=PRECISION_WHOLE,

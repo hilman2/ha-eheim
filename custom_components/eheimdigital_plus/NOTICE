@@ -22,3 +22,8 @@ The embedded protocol package retains its MIT license.
 The JSON integration metadata, icons and translations are adapted from the
 same Home Assistant integration. This custom integration is maintained by
 hilman2 and is not an official EHEIM or Home Assistant release.
+
+Version 0.2.0 introduces the standalone eheimdigital_plus domain, confirmed
+legacy migration, connection and per-device availability handling, optional
+LED controls and HA Gold criteria documentation. The quality assessment is
+maintained by this project and is not an official Home Assistant Core rating.

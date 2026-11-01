@@ -1,0 +1,104 @@
+# Project self-assessment for HA Gold criteria; this is not an official Core rating.
+rules:
+  action-setup:
+    status: exempt
+    comment: No service actions implemented.
+  appropriate-polling: done
+  brands:
+    status: done
+    comment: Local brand/icon.png and icon@2x.png, supported by HACS validation.
+  common-modules: done
+  config-flow-test-coverage:
+    status: done
+    comment: CI requires 100% of config_flow.py. Tests cover invalid addresses, handshake
+      errors, migration, discovery and reconfiguration.
+  config-flow: done
+  dependency-transparency:
+    status: exempt
+    comment: No external device requirements. The MIT protocol library is shipped
+      with the integration.
+  docs-actions:
+    status: done
+    comment: docs/reference.md describes platform actions; docs/examples.md gives
+      automations.
+  docs-conditions:
+    status: exempt
+    comment: This integration does not have any conditions.
+  docs-high-level-description: done
+  docs-installation-instructions: done
+  docs-removal-instructions: done
+  docs-triggers:
+    status: exempt
+    comment: This integration does not have any triggers.
+  entity-event-setup: done
+  entity-unique-id: done
+  has-entity-name: done
+  runtime-data: done
+  test-before-configure: done
+  test-before-setup: done
+  unique-config-entry: done
+  action-exceptions: done
+  config-entry-unloading: done
+  docs-configuration-parameters:
+    status: exempt
+    comment: This integration doesn't have an options flow.
+  docs-installation-parameters:
+    status: done
+    comment: docs/reference.md
+  entity-unavailable: done
+  integration-owner: done
+  log-when-unavailable: done
+  parallel-updates: done
+  reauthentication-flow:
+    status: exempt
+    comment: This integration requires no authentication.
+  test-coverage:
+    status: done
+    comment: CI requires >95% per HA module including branches; bundled protocol modules
+      are reported separately.
+  devices: done
+  diagnostics: done
+  discovery-update-info: done
+  discovery: done
+  docs-data-update:
+    status: done
+    comment: docs/reference.md
+  docs-examples:
+    status: done
+    comment: docs/examples.md
+  docs-known-limitations:
+    status: done
+    comment: docs/reference.md
+  docs-supported-devices:
+    status: done
+    comment: docs/reference.md
+  docs-supported-functions:
+    status: done
+    comment: docs/reference.md
+  docs-troubleshooting:
+    status: done
+    comment: docs/troubleshooting.md
+  docs-use-cases:
+    status: done
+    comment: docs/examples.md
+  dynamic-devices:
+    status: done
+    comment: New complete devices are added once; incomplete devices wait for data.
+      Platform callbacks are removed on unload.
+  entity-category: done
+  entity-device-class: done
+  entity-disabled-by-default:
+    status: done
+    comment: The optional system LED control is disabled by default and tested through
+      user activation and reload.
+  entity-translations: done
+  exception-translations: done
+  icon-translations: done
+  reconfiguration-flow: done
+  repair-issues:
+    status: exempt
+    comment: No persistent actionable condition requires a repair. Setup errors are
+      translated; connection outages recover through polling or reconfiguration.
+  stale-devices:
+    status: done
+    comment: After 120 seconds without data, a mesh member is unavailable and user-removable.

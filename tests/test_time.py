@@ -34,9 +34,9 @@ async def test_setup(
     mock_config_entry.add_to_hass(hass)
 
     with (
-        patch("custom_components.eheimdigital.PLATFORMS", [Platform.TIME]),
+        patch("custom_components.eheimdigital_plus.PLATFORMS", [Platform.TIME]),
         patch(
-            "custom_components.eheimdigital.coordinator.asyncio.Event",
+            "custom_components.eheimdigital_plus.coordinator.asyncio.Event",
             new=mock_event,
         ),
     ):

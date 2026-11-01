@@ -163,9 +163,9 @@ Die [HA-Anleitung zum Datenabruf](https://contributors.home-assistant.io/core/in
 beschreibt die gemeinsame Aktualisierung mehrerer Entitäten.
 
 Die Custom Integration enthält diese Erweiterungen und die Gerätebibliothek.
-Sie verwendet die Core-Domain `eheimdigital` weiter, damit vorhandene
-Geräte- und Entitätskennungen erhalten bleiben. Die Installation ersetzt
-die eingebaute Implementierung. Die [README](../README.md) beschreibt den Wechsel.
+Ab Version 0.2.0 verwendet sie die eigene Domain `eheimdigital_plus`. Die
+bestätigte Migration erhält bestehende Geräte und Entitäts-IDs. Die
+[Wechselanleitung](migration.md) beschreibt den Ablauf.
 
 Die [Entwicklungsanleitung](development.md) beschreibt die automatisierten
 Prüfungen. Schreibfunktionen und weitere Filtermodelle wurden nicht an echter

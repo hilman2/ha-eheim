@@ -31,14 +31,14 @@ from pytest_homeassistant_custom_component.common import (
 )
 from syrupy.assertion import SnapshotAssertion
 
-from custom_components.eheimdigital._vendor.eheimdigital.classic_led_ctrl import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.classic_led_ctrl import (
     EheimDigitalClassicLEDControl,
 )
-from custom_components.eheimdigital._vendor.eheimdigital.types import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.types import (
     EheimDeviceType,
     EheimDigitalClientError,
 )
-from custom_components.eheimdigital.const import EFFECT_DAYCL_MODE
+from custom_components.eheimdigital_plus.const import EFFECT_DAYCL_MODE
 
 from .conftest import init_integration, mock_event
 
@@ -66,9 +66,9 @@ async def test_setup_classic_led_ctrl(
     classic_led_ctrl_mock.tankconfig = tankconfig
 
     with (
-        patch("custom_components.eheimdigital.PLATFORMS", [Platform.LIGHT]),
+        patch("custom_components.eheimdigital_plus.PLATFORMS", [Platform.LIGHT]),
         patch(
-            "custom_components.eheimdigital.coordinator.asyncio.Event",
+            "custom_components.eheimdigital_plus.coordinator.asyncio.Event",
             new=mock_event,
         ),
     ):
@@ -96,9 +96,9 @@ async def test_dynamic_new_devices(
     eheimdigital_hub_mock.return_value.devices = {}
 
     with (
-        patch("custom_components.eheimdigital.PLATFORMS", [Platform.LIGHT]),
+        patch("custom_components.eheimdigital_plus.PLATFORMS", [Platform.LIGHT]),
         patch(
-            "custom_components.eheimdigital.coordinator.asyncio.Event",
+            "custom_components.eheimdigital_plus.coordinator.asyncio.Event",
             new=mock_event,
         ),
     ):

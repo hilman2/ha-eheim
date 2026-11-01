@@ -37,7 +37,7 @@ class EheimDigitalSelectDescription[_DeviceT: EheimDigitalDevice](
     options_fn: Callable[[_DeviceT], list[str]] | None = None
     use_api_unit: Literal[True] | None = None
     value_fn: Callable[[_DeviceT], str | None]
-    set_value_fn: Callable[[_DeviceT, str], Awaitable[None] | None]
+    set_value_fn: Callable[[_DeviceT, str], Awaitable[None]]
 
 
 REEFLEX_DESCRIPTIONS: tuple[
@@ -235,9 +235,7 @@ class EheimDigitalSelect[_DeviceT: EheimDigitalDevice](
     @override
     @exception_handler
     async def async_select_option(self, option: str) -> None:
-        if await_return := self.entity_description.set_value_fn(self._device, option):
-            return await await_return
-        return None
+        await self.entity_description.set_value_fn(self._device, option)
 
     @override
     def _async_update_attrs(self) -> None:

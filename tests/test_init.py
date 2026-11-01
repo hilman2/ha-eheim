@@ -12,11 +12,11 @@ from homeassistant.setup import async_setup_component
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.typing import WebSocketGenerator
 
-from custom_components.eheimdigital._vendor.eheimdigital.types import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.types import (
     EheimDeviceType,
     EheimDigitalClientError,
 )
-from custom_components.eheimdigital.const import DOMAIN
+from custom_components.eheimdigital_plus.const import DOMAIN
 
 from .conftest import init_integration, mock_event
 
@@ -35,7 +35,7 @@ async def test_dynamic_entities(
     eheimdigital_hub_mock.return_value.devices["00:00:00:00:00:02"].heater_data = None
     with (
         patch(
-            "custom_components.eheimdigital.coordinator.asyncio.Event",
+            "custom_components.eheimdigital_plus.coordinator.asyncio.Event",
             new=mock_event,
         ),
     ):
@@ -169,7 +169,9 @@ async def test_entry_setup_retries_on_incomplete_main_device(
     # The real events are needed here, since the point is that one of them is
     # never set while the data is still missing.
     mock_config_entry.add_to_hass(hass)
-    with patch("custom_components.eheimdigital.coordinator.MAIN_DEVICE_TIMEOUT", 0):
+    with patch(
+        "custom_components.eheimdigital_plus.coordinator.MAIN_DEVICE_TIMEOUT", 0
+    ):
         await hass.config_entries.async_setup(mock_config_entry.entry_id)
 
     assert mock_config_entry.state is ConfigEntryState.SETUP_RETRY

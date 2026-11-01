@@ -1,85 +1,76 @@
-<img src="assets/icon.svg" width="64" height="64" alt="">
+<img src="custom_components/eheimdigital_plus/brand/icon.png" width="64" height="64" alt="">
 
-# EHEIM Digital für Home Assistant
+# EHEIM Digital Plus
 
-Custom Integration auf Basis der offiziellen EHEIM-Digital-Integration aus
-Home Assistant Core 2026.10.4. Die Gerätebibliothek ist vollständig enthalten.
-Ein gesondertes Python-Paket oder ein Bibliotheks-Release wird nicht benötigt.
-
-Zusätzlich zu den Core-Funktionen bietet sie für den professionel 5e:
-
-| Sensor | Anzeige |
-| --- | --- |
-| Betriebsdauer | Stunden |
-| Verbleibende Ausschaltzeit | Minuten |
-| Verbleibende Fütterungspause | Minuten |
-| Fehlerstatus | Kein Fehler, Rotor blockiert, Luft, Temperaturfehler oder unbekannter Fehler |
-| Geschätzter Durchfluss | l/h |
-| Geschätzte Leistungsaufnahme | W |
-
-Durchfluss und Leistungsaufnahme sind Schätzungen nach der Geräte-Weboberfläche.
-Die Leistungsaufnahme eignet sich zur Beobachtung des Betriebs und ersetzt
-keinen Stromzähler. Details stehen in der [Protokollanalyse](docs/protocol.md).
-Die zusätzlichen Sensoren wurden an einem professionel 5e 350 mit Firmware
-1.03.2 ausgelesen. Der bisherige Funktionsumfang für andere Gerätetypen stammt
-aus Core; diese Geräte wurden hier nicht physisch getestet.
-
-## Voraussetzungen
-
-- Home Assistant 2026.10.4 oder neuer. Die Tests verwenden 2026.10.4.
-- Home Assistant erreicht das EHEIM-Hauptgerät im lokalen Netzwerk.
-- HACS, der integrierte Marketplace oder eine manuelle Installation.
-
-Diese Version verwendet dieselbe Domain `eheimdigital` wie die Core-Integration
-und ersetzt deren Implementierung, solange sie installiert ist. Die Geräte,
-Entitäten und bestehenden Unique IDs bleiben erhalten. Weitere Core-Änderungen
-kommen erst durch ein Update dieser Custom Integration hinzu.
-
-## Über HACS installieren
+Lokale Home-Assistant-Integration für EHEIM-Digital-Geräte. Sie basiert auf Core
+2026.10.4 und enthält die Gerätebibliothek vollständig. Ein externes
+`eheimdigital`-Paket wird nicht benötigt.
 
 [In HACS öffnen](https://my.home-assistant.io/redirect/hacs_repository/?owner=hilman2&repository=ha-eheim&category=integration)
+· [Releases](https://github.com/hilman2/ha-eheim/releases)
+· [Prüfungen](https://github.com/hilman2/ha-eheim/actions/workflows/validate.yml)
 
-1. Öffne HACS und wähle im Menü **Benutzerdefinierte Repositories**.
-2. Füge `https://github.com/hilman2/ha-eheim` mit Typ **Integration** hinzu.
-3. Lade **EHEIM Digital** herunter und starte Home Assistant neu.
-4. Eine bestehende EHEIM-Einrichtung wird weiterverwendet. Lege sie nicht erneut an.
-5. Bei einer neuen Einrichtung wähle unter **Einstellungen > Geräte & Dienste >
-   Integration hinzufügen** den Eintrag **EHEIM Digital** und trage die IP-Adresse
-   des Hauptgeräts ein.
+Zusätzlich zu den übernommenen Core-Funktionen stehen für den professionel 5e
+Betriebsdauer, Ausschaltzeit, Fütterungspause, Fehlerstatus, geschätzter
+Durchfluss und geschätzte Leistungsaufnahme zur Verfügung. Durchfluss und
+Leistung sind berechnete Werte der Geräte-Weboberfläche.
 
-Ab Home Assistant 2026.11 übernimmt der integrierte Marketplace die Rolle von
-HACS. Dort wird das Repository per Link hinzugefügt. Weil diese Integration
-eine Core-Integration ersetzt, muss die Ersetzung bestätigt werden.
-Siehe [HA-Anleitung für Custom Integrations](https://contributors.home-assistant.io/marketplace/guides/integrations/).
+## Installieren
 
-## Manuell installieren
+Du brauchst Home Assistant ab 2026.10.4 und eine lokale Verbindung zum
+EHEIM-Hauptgerät. Die automatisierten Tests verwenden HA 2026.10.4.
 
-1. Lade das ZIP aus den [Releases](https://github.com/hilman2/ha-eheim/releases)
-   herunter und entpacke es in dein HA-Konfigurationsverzeichnis. Danach
-   muss `custom_components/eheimdigital/manifest.json` dort vorhanden sein.
-   Alternativ kopierst du den gesamten Ordner `custom_components/eheimdigital`
-   aus diesem Repository dorthin, einschließlich `_vendor`.
-2. Starte Home Assistant neu.
-3. Verwende die bestehende Einrichtung oder füge **EHEIM Digital** hinzu.
+1. Öffne HACS und füge `https://github.com/hilman2/ha-eheim` unter
+   **Benutzerdefinierte Repositories** mit Typ **Integration** hinzu.
+2. Lade **EHEIM Digital Plus** herunter und starte Home Assistant neu.
+3. Öffne **Einstellungen > Geräte & Dienste > Integration hinzufügen**.
+4. Wähle **EHEIM Digital Plus** und gib den Hostnamen oder die IP-Adresse deines
+   Hauptgeräts ein. Du kannst auch die automatische Netzwerkerkennung bestätigen.
 
-Die Oberfläche verwendet Deutsch oder Englisch entsprechend der HA-Sprache.
-Die neuen Diagnosesensoren findest du auf der Geräteseite.
+Ab HA 2026.11 übernimmt der integrierte Marketplace die Rolle von HACS;
+derselbe Link funktioniert weiterhin. Eine Anmeldung am EHEIM-Gerät ist nicht nötig.
 
-## Zur Core-Integration zurückkehren
+Für die manuelle Installation entpackst du das ZIP aus den Releases in dein
+HA-Konfigurationsverzeichnis. Danach muss
+`custom_components/eheimdigital_plus/manifest.json` vorhanden sein. Starte HA neu.
 
-Entferne die heruntergeladene Integration in HACS beziehungsweise im Marketplace,
-oder entferne bei manueller Installation den Ordner `custom_components/eheimdigital`.
-Starte Home Assistant danach neu. Lösche die EHEIM-Einrichtung unter
-**Geräte & Dienste** dafür nicht. Die Core-Integration übernimmt sie wieder.
-Die zusätzlichen Sensoren stehen dort erst zur Verfügung, wenn Core sie unterstützt.
+## Von der bisherigen Integration wechseln
 
-## Entwicklung und Herkunft
+Version 0.2.0 hat die eigene Domain `eheimdigital_plus`. Sie ersetzt die
+Core-Integration nicht. Bei einem Wechsel von Core oder unserer Version 0.1.0
+kann sie bestehende Geräte und Entitäts-IDs nach Bestätigung übernehmen.
 
-Die [Entwicklungsanleitung](docs/development.md) enthält Testbefehle,
-die Abfrage eines echten Filters und den Bau des Installations-ZIPs.
-Die bisherigen [Core-Beiträge](contributions/README.md) und die
-[Protokollanalyse](docs/protocol.md) bleiben als Hintergrund erhalten.
+Die [Wechselanleitung](docs/migration.md) beschreibt die Schritte. Deaktiviere
+die bisherige Einrichtung, bevor du Plus für dasselbe Hauptgerät einrichtest.
+
+## Funktionen und Hilfe
+
+- [Geräte, Funktionen und Einstellungen](docs/reference.md)
+- [Ausfälle beheben und Diagnose herunterladen](docs/troubleshooting.md)
+- [Beispiele für Automationen](docs/examples.md)
+- [Gold-Prüfmatrix und Testabdeckung](docs/quality.md)
+- [Entwicklung und Installationspakete](docs/development.md)
+
+Die System-LED-Steuerung ist als selten benötigte Konfiguration standardmäßig
+deaktiviert. Du kannst sie auf der Geräteseite unter den deaktivierten Entitäten
+aktivieren. Die sechs zusätzlichen Filtersensoren sind standardmäßig aktiv.
+
+## Entfernen
+
+Entferne die Plus-Einrichtung unter **Einstellungen > Geräte & Dienste**.
+Deinstalliere danach das Repository in HACS beziehungsweise im Marketplace.
+Bei manueller Installation entfernst du `custom_components/eheimdigital_plus`.
+Starte HA danach neu.
+
+Die Core-Integration bleibt unabhängig davon verfügbar. Nach einer Übernahme
+steht die bisherige Einrichtung deaktiviert weiter in HA; die von Plus übernommenen
+Entitäts-IDs werden bei einer erneuten Core-Einrichtung nicht automatisch zurückübernommen.
+Details stehen in der [Wechselanleitung](docs/migration.md).
+
+## Herkunft
 
 Der HA-Code steht unter Apache-2.0, die eingebettete Bibliothek unter MIT.
-Quellen, Änderungen und Lizenztexte stehen in der
-[NOTICE](custom_components/eheimdigital/NOTICE).
+Quellstände und Änderungen stehen in der
+[NOTICE](custom_components/eheimdigital_plus/NOTICE). Die
+[Protokollanalyse](docs/protocol.md) und bisherigen
+[Core-Beiträge](contributions/README.md) dokumentieren die Geräteuntersuchung.

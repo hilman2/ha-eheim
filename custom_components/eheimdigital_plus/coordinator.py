@@ -3,6 +3,7 @@
 
 import asyncio
 from collections.abc import Callable
+from datetime import timedelta
 from typing import override
 
 from aiohttp import ClientError
@@ -11,12 +12,15 @@ from homeassistant.const import CONF_HOST
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.entity_component import DEFAULT_SCAN_INTERVAL
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from ._vendor.eheimdigital.device import EheimDigitalDevice
 from ._vendor.eheimdigital.hub import EheimDigitalHub
-from ._vendor.eheimdigital.types import EheimDeviceType, EheimDigitalClientError
+from ._vendor.eheimdigital.types import (
+    EheimDeviceType,
+    EheimDigitalClientError,
+    MsgTitle,
+)
 from .const import DOMAIN, LOGGER
 
 type AsyncSetupDeviceEntitiesCallback = Callable[[dict[str, EheimDigitalDevice]], None]
@@ -24,6 +28,8 @@ type AsyncSetupDeviceEntitiesCallback = Callable[[dict[str, EheimDigitalDevice]]
 type EheimDigitalConfigEntry = ConfigEntry[EheimDigitalUpdateCoordinator]
 
 MAIN_DEVICE_TIMEOUT = 2
+UPDATE_INTERVAL = timedelta(seconds=15)
+DEVICE_STALE_SECONDS = 120
 
 
 class EheimDigitalUpdateCoordinator(
@@ -42,7 +48,7 @@ class EheimDigitalUpdateCoordinator(
             LOGGER,
             config_entry=config_entry,
             name=DOMAIN,
-            update_interval=DEFAULT_SCAN_INTERVAL,
+            update_interval=UPDATE_INTERVAL,
         )
         self.main_device_added_event = asyncio.Event()
         self.main_device_complete_event = asyncio.Event()
@@ -52,11 +58,29 @@ class EheimDigitalUpdateCoordinator(
             loop=hass.loop,
             receive_callback=self._async_receive_callback,
             device_found_callback=self._async_device_found,
+            disconnect_callback=self._async_disconnected,
             main_device_added_event=self.main_device_added_event,
         )
         self.known_devices: set[str] = set()
         self.incomplete_devices: set[str] = set()
         self.platform_callbacks: set[AsyncSetupDeviceEntitiesCallback] = set()
+        self.device_last_seen: dict[str, float] = {}
+
+    def is_device_available(self, address: str) -> bool:
+        """Keep a silent mesh member unavailable until it sends another packet."""
+        return address in self.hub.devices and (
+            self.hass.loop.time() - self.device_last_seen.get(address, 0)
+            <= DEVICE_STALE_SECONDS
+        )
+
+    async def _async_disconnected(self) -> None:
+        """Mark all entities unavailable as soon as the WebSocket stops."""
+        self.async_set_update_error(
+            UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="connection_lost",
+            )
+        )
 
     def add_platform_callback(
         self,
@@ -64,6 +88,9 @@ class EheimDigitalUpdateCoordinator(
     ) -> None:
         """Add the setup callbacks from a specific platform."""
         self.platform_callbacks.add(async_setup_device_entities)
+        self.config_entry.async_on_unload(
+            lambda: self.platform_callbacks.discard(async_setup_device_entities)
+        )
 
     async def _async_device_found(
         self, device_address: str, device_type: EheimDeviceType
@@ -72,7 +99,7 @@ class EheimDigitalUpdateCoordinator(
 
         This function is called from the library whenever a new device is added.
         """
-
+        self.device_last_seen[device_address] = self.hass.loop.time()
         if self.hub.devices[device_address].is_missing_data:
             self.incomplete_devices.add(device_address)
             return
@@ -83,6 +110,7 @@ class EheimDigitalUpdateCoordinator(
         ):
             for platform_callback in self.platform_callbacks:
                 platform_callback({device_address: self.hub.devices[device_address]})
+            self.known_devices.add(device_address)
             if device_address in self.incomplete_devices:
                 self.incomplete_devices.remove(device_address)
 
@@ -91,7 +119,14 @@ class EheimDigitalUpdateCoordinator(
         if (main := self.hub.main) is not None and not main.is_missing_data:
             self.main_device_complete_event.set()
 
-    async def _async_receive_callback(self) -> None:
+    async def _async_receive_callback(
+        self, device_address: str | None = None, title: MsgTitle | None = None
+    ) -> None:
+        now = self.hass.loop.time()
+        if device_address is None:
+            self.device_last_seen.update(dict.fromkeys(self.hub.devices, now))
+        else:
+            self.device_last_seen[device_address] = now
         self._async_check_main_device_complete()
         if any(self.incomplete_devices):
             for device_address in self.incomplete_devices.copy():
@@ -99,6 +134,8 @@ class EheimDigitalUpdateCoordinator(
                     await self._async_device_found(
                         device_address, EheimDeviceType.VERSION_UNDEFINED
                     )
+        if not self.last_update_success:
+            LOGGER.info("Connection to EHEIM Digital recovered")
         self.async_set_updated_data(self.hub.devices)
 
     @override
@@ -118,13 +155,20 @@ class EheimDigitalUpdateCoordinator(
                 # after that, so wait for the rest of the main device as well.
                 self._async_check_main_device_complete()
                 await self.main_device_complete_event.wait()
-        except (TimeoutError, EheimDigitalClientError) as err:
+            for address in self.hub.devices:
+                self.device_last_seen.setdefault(address, self.hass.loop.time())
+        except (TimeoutError, ClientError, EheimDigitalClientError) as err:
+            await self.hub.close()
             raise ConfigEntryNotReady from err
 
     @override
     async def _async_update_data(self) -> dict[str, EheimDigitalDevice]:
         try:
             await self.hub.update()
-        except ClientError as ex:
-            raise UpdateFailed from ex
+        except (ClientError, EheimDigitalClientError, TimeoutError) as ex:
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="communication_error",
+                translation_placeholders={"error": str(ex)},
+            ) from ex
         return self.data

@@ -15,7 +15,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
-    snapshot_platform,
 )
 from syrupy.assertion import SnapshotAssertion
 
@@ -33,9 +32,9 @@ async def test_setup(
     mock_config_entry.add_to_hass(hass)
 
     with (
-        patch("custom_components.eheimdigital.PLATFORMS", [Platform.NUMBER]),
+        patch("custom_components.eheimdigital_plus.PLATFORMS", [Platform.NUMBER]),
         patch(
-            "custom_components.eheimdigital.coordinator.asyncio.Event",
+            "custom_components.eheimdigital_plus.coordinator.asyncio.Event",
             new=mock_event,
         ),
     ):
@@ -47,7 +46,16 @@ async def test_setup(
         )
         await hass.async_block_till_done()
 
-    await snapshot_platform(hass, entity_registry, snapshot, mock_config_entry.entry_id)
+    for entity in er.async_entries_for_config_entry(
+        entity_registry, mock_config_entry.entry_id
+    ):
+        assert entity == snapshot(name=f"{entity.entity_id}-entry")
+        state = hass.states.get(entity.entity_id)
+        if entity.disabled_by is None:
+            assert state is not None
+            assert state == snapshot(name=f"{entity.entity_id}-state")
+        else:
+            assert state is None
 
 
 @pytest.mark.parametrize(
@@ -67,12 +75,6 @@ async def test_setup(
                     0.4,
                     "nReduce",
                     4,
-                ),
-                (
-                    "number.mock_aquarium_mock_heater_system_led_brightness",
-                    20,
-                    "sysLED",
-                    20,
                 ),
             ],
         ),
@@ -96,12 +98,6 @@ async def test_setup(
                     72.1,
                     "rel_motor_speed_night",
                     int(72.1),
-                ),
-                (
-                    "number.mock_aquarium_mock_classicvario_system_led_brightness",
-                    20,
-                    "sysLED",
-                    20,
                 ),
             ],
         ),
@@ -141,12 +137,6 @@ async def test_setup(
                     "number.mock_aquarium_mock_reeflex_pause_duration",
                     20,
                     "pauseTime",
-                    20,
-                ),
-                (
-                    "number.mock_aquarium_mock_reeflex_system_led_brightness",
-                    20,
-                    "sysLED",
                     20,
                 ),
             ],
@@ -202,13 +192,6 @@ async def test_set_value(
                     -23,
                     -2.3,
                 ),
-                (
-                    "number.mock_aquarium_mock_heater_system_led_brightness",
-                    "usrdta",
-                    "sysLED",
-                    87,
-                    87,
-                ),
             ],
         ),
         (
@@ -235,13 +218,6 @@ async def test_set_value(
                     20,
                     20,
                 ),
-                (
-                    "number.mock_aquarium_mock_classicvario_system_led_brightness",
-                    "usrdta",
-                    "sysLED",
-                    20,
-                    20,
-                ),
             ],
         ),
         (
@@ -258,13 +234,6 @@ async def test_set_value(
                     "number.mock_aquarium_mock_filter_high_pulse_duration",
                     "filter_data",
                     "pm_time_high",
-                    20,
-                    20,
-                ),
-                (
-                    "number.mock_aquarium_mock_filter_system_led_brightness",
-                    "usrdta",
-                    "sysLED",
                     20,
                     20,
                 ),
@@ -293,13 +262,6 @@ async def test_set_value(
                     "pauseTime",
                     20,
                     20,
-                ),
-                (
-                    "number.mock_aquarium_mock_reeflex_system_led_brightness",
-                    "usrdta",
-                    "sysLED",
-                    100,
-                    100,
                 ),
             ],
         ),

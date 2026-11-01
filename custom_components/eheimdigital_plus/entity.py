@@ -11,6 +11,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from yarl import URL
 
 from ._vendor.eheimdigital.device import EheimDigitalDevice
 from ._vendor.eheimdigital.types import EheimDigitalClientError
@@ -23,7 +24,9 @@ def async_device_info(
 ) -> DeviceInfo:
     """Return the base device info for an EHEIM Digital device."""
     return DeviceInfo(
-        configuration_url=f"http://{coordinator.config_entry.data[CONF_HOST]}",
+        configuration_url=str(
+            URL.build(scheme="http", host=coordinator.config_entry.data[CONF_HOST])
+        ),
         name=device.name,
         connections={(CONNECTION_NETWORK_MAC, device.mac_address)},
         manufacturer="EHEIM",
@@ -68,11 +71,22 @@ class EheimDigitalEntity[_DeviceT: EheimDigitalDevice](
     @abstractmethod
     def _async_update_attrs(self) -> None: ...
 
+    @property
+    @override
+    def available(self) -> bool:
+        """Require both a working hub and a recent packet from this device."""
+        return (
+            super().available
+            and not self._device.is_missing_data
+            and self.coordinator.is_device_available(self._device_address)
+        )
+
     @callback
     @override
     def _handle_coordinator_update(self) -> None:
         """Update attributes when the coordinator updates."""
-        self._async_update_attrs()
+        if not self._device.is_missing_data:
+            self._async_update_attrs()
         super()._handle_coordinator_update()
 
 

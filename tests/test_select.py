@@ -19,7 +19,7 @@ from pytest_homeassistant_custom_component.common import (
 )
 from syrupy.assertion import SnapshotAssertion
 
-from custom_components.eheimdigital._vendor.eheimdigital.types import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.types import (
     FilterMode,
     FilterModeProf,
     ReeflexMode,
@@ -39,9 +39,9 @@ async def test_setup(
     mock_config_entry.add_to_hass(hass)
 
     with (
-        patch("custom_components.eheimdigital.PLATFORMS", [Platform.SELECT]),
+        patch("custom_components.eheimdigital_plus.PLATFORMS", [Platform.SELECT]),
         patch(
-            "custom_components.eheimdigital.coordinator.asyncio.Event",
+            "custom_components.eheimdigital_plus.coordinator.asyncio.Event",
             new=mock_event,
         ),
     ):

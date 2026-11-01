@@ -2,15 +2,20 @@
   "config": {
     "abort": {
       "already_configured": "Das Gerät ist bereits eingerichtet",
-      "unique_id_mismatch": "Die Gerätekennung stimmt nicht mit der bisherigen Kennung überein"
+      "unique_id_mismatch": "Die Gerätekennung stimmt nicht mit der bisherigen Kennung überein",
+      "legacy_active": "Deaktiviere zuerst die bestehende EHEIM-Digital-Einrichtung unter Einstellungen > Geräte & Dienste. Starte danach die Einrichtung von EHEIM Digital Plus erneut.",
+      "invalid_host": "Gib einen Hostnamen oder eine IP-Adresse ohne http://, Port oder Pfad ein.",
+      "unsupported_device": "Dieser EHEIM-Gerätetyp wird noch nicht unterstützt."
     },
     "error": {
       "cannot_connect": "Verbindung fehlgeschlagen",
-      "unknown": "Unerwarteter Fehler"
+      "unknown": "Unerwarteter Fehler",
+      "invalid_host": "Gib einen Hostnamen oder eine IP-Adresse ohne http://, Port oder Pfad ein.",
+      "unsupported_device": "Dieser EHEIM-Gerätetyp wird noch nicht unterstützt."
     },
     "step": {
       "discovery_confirm": {
-        "description": "Möchtest du EHEIM Digital einrichten?"
+        "description": "Möchtest du EHEIM Digital Plus einrichten?"
       },
       "reconfigure": {
         "data": {
@@ -27,6 +32,10 @@
         "data_description": {
           "host": "Hostname oder IP-Adresse des Hauptgeräts, zum Beispiel 192.168.1.50."
         }
+      },
+      "migrate": {
+        "title": "Bestehende Einrichtung übernehmen",
+        "description": "Geräte, Entitäts-IDs und eigene Namen aus der deaktivierten EHEIM-Digital-Einrichtung übernehmen? Die bisherige Einrichtung bleibt deaktiviert."
       }
     }
   },
@@ -205,7 +214,13 @@
   "exceptions": {
     "communication_error": {
       "message": "Fehler bei der Kommunikation mit dem EHEIM-Digital-Hauptgerät: {error}"
+    },
+    "legacy_active": {
+      "message": "Die bisherige EHEIM-Digital-Einrichtung muss für die Übernahme deaktiviert bleiben."
+    },
+    "connection_lost": {
+      "message": "Die Verbindung zum EHEIM-Gerät wurde unterbrochen."
     }
   },
-  "title": "EHEIM Digital"
+  "title": "EHEIM Digital Plus"
 }

@@ -6,8 +6,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from custom_components.eheimdigital._vendor.eheimdigital.hub import EheimDigitalHub
-from custom_components.eheimdigital._vendor.eheimdigital.types import UsrDtaPacket
+from custom_components.eheimdigital_plus._vendor.eheimdigital.hub import EheimDigitalHub
+from custom_components.eheimdigital_plus._vendor.eheimdigital.types import UsrDtaPacket
 
 
 @pytest.mark.parametrize("fixture", ["usrdta_heater.json"])

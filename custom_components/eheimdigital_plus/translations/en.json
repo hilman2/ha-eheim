@@ -2,15 +2,20 @@
   "config": {
     "abort": {
       "already_configured": "Device is already configured",
-      "unique_id_mismatch": "The identifier does not match the previous identifier"
+      "unique_id_mismatch": "The identifier does not match the previous identifier",
+      "legacy_active": "First disable the existing EHEIM Digital entry under Settings > Devices & services. Then start setting up EHEIM Digital Plus again.",
+      "invalid_host": "Enter a hostname or IP address without http://, a port or a path.",
+      "unsupported_device": "This EHEIM device type is not supported yet."
     },
     "error": {
       "cannot_connect": "Failed to connect",
-      "unknown": "Unexpected error"
+      "unknown": "Unexpected error",
+      "invalid_host": "Enter a hostname or IP address without http://, a port or a path.",
+      "unsupported_device": "This EHEIM device type is not supported yet."
     },
     "step": {
       "discovery_confirm": {
-        "description": "Do you want to set up EHEIM Digital?"
+        "description": "Do you want to set up EHEIM Digital Plus?"
       },
       "reconfigure": {
         "data": {
@@ -27,6 +32,10 @@
         "data_description": {
           "host": "The host or IP address of your main device. Only needed to change if 'eheimdigital' doesn't work."
         }
+      },
+      "migrate": {
+        "title": "Migrate existing setup",
+        "description": "Move devices, entity IDs and custom names from the disabled EHEIM Digital setup? The previous setup will remain disabled."
       }
     }
   },
@@ -205,7 +214,13 @@
   "exceptions": {
     "communication_error": {
       "message": "An error occurred while communicating with the EHEIM Digital hub: {error}"
+    },
+    "legacy_active": {
+      "message": "The previous EHEIM Digital entry must remain disabled during migration."
+    },
+    "connection_lost": {
+      "message": "The connection to the EHEIM device was lost."
     }
   },
-  "title": "EHEIM Digital"
+  "title": "EHEIM Digital Plus"
 }

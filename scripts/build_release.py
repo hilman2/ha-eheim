@@ -5,7 +5,7 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
 ROOT = Path(__file__).resolve().parent.parent
-COMPONENT = ROOT / "custom_components" / "eheimdigital"
+COMPONENT = ROOT / "custom_components" / "eheimdigital_plus"
 
 
 def build_release(output_dir: Path) -> Path:

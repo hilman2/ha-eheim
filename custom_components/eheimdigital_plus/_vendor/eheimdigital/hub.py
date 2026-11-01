@@ -65,6 +65,7 @@ class EheimDigitalHub:
         main_device_added_event: asyncio.Event | None = None,
         device_found_callback: Callable[[str, EheimDeviceType], Awaitable[None]]
         | None = None,
+        disconnect_callback: Callable[[], Awaitable[None]] | None = None,
     ) -> None:
         """Initialize a hub."""
         self.device_found_callback = device_found_callback
@@ -73,6 +74,8 @@ class EheimDigitalHub:
         self.main = None
         self.main_device_added_event = main_device_added_event
         self.receive_callback = receive_callback
+        self.disconnect_callback = disconnect_callback
+        self._closing = False
         self._receive_callback_with_args = False
         if (
             receive_callback is not None
@@ -82,15 +85,21 @@ class EheimDigitalHub:
         self.session = session or aiohttp.ClientSession()
         self.url = URL.build(scheme="http", host=host, path="/ws")
 
-    async def connect(self) -> None:  # pragma: no cover
+    async def connect(self) -> None:
         """Connect to the hub."""
         self.ws = await self.session.ws_connect(self.url)
+        self._closing = False
         self.receive_task = self.loop.create_task(self.receive_messages())
 
-    async def close(self) -> None:  # pragma: no cover
+    async def close(self) -> None:
         """Close the connection."""
-        if self.receive_task is not None:
-            _ = self.receive_task.cancel()
+        self._closing = True
+        if (
+            task := self.receive_task
+        ) is not None and task is not asyncio.current_task():
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+            self.receive_task = None
         if self.ws is not None and not self.ws.closed:
             _ = await self.ws.close()
 
@@ -174,11 +183,12 @@ class EheimDigitalHub:
             EheimDigitalClientError: When there is an error with the connection.
 
         """
-        if self.ws is not None:
-            try:
-                await self.ws.send_json(packet)
-            except aiohttp.ClientError as err:
-                raise EheimDigitalClientError from err
+        if self.ws is None or self.ws.closed:
+            raise EheimDigitalClientError("The device connection is closed")
+        try:
+            await self.ws.send_json(packet)
+        except aiohttp.ClientError as err:
+            raise EheimDigitalClientError from err
 
     async def parse_mesh_network(self, msg: MeshNetworkPacket) -> None:
         """Parse a MESH_NETWORK packet."""
@@ -264,6 +274,9 @@ class EheimDigitalHub:
             )
             await self.ws.close()
             return
+        finally:
+            if not self._closing and self.disconnect_callback is not None:
+                await self.disconnect_callback()
 
     async def update(self) -> None:
         """Update the device states."""
@@ -271,7 +284,7 @@ class EheimDigitalHub:
             _LOGGER.info("WebSocket connection to %s closed, reconnect...", self.url)
             await self.connect()
         await self.request_usrdta("ALL")
-        for device in self.devices.values():
+        for device in tuple(self.devices.values()):
             await device.update()
 
     def as_dict(self) -> dict[str, Any]:

@@ -16,7 +16,7 @@ def test_archive_imports_without_external_library(tmp_path: Path) -> None:
     with ZipFile(archive) as package:
         assert not any("__pycache__" in name for name in package.namelist())
         package.extractall(config_dir)
-    component = config_dir / "custom_components/eheimdigital"
+    component = config_dir / "custom_components/eheimdigital_plus"
     manifest = json.loads((component / "manifest.json").read_text())
     assert manifest["requirements"] == []
     assert (component / "LICENSE").is_file()
@@ -29,7 +29,7 @@ import sys
 
 sys.path.insert(0, sys.argv[1])
 assert importlib.util.find_spec("eheimdigital") is None
-import custom_components.eheimdigital as integration
+import custom_components.eheimdigital_plus as integration
 assert integration.__file__.startswith(sys.argv[1])
 for module in pkgutil.walk_packages(integration.__path__, integration.__name__ + "."):
     importlib.import_module(module.name)

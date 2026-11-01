@@ -14,23 +14,23 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.syrupy import HomeAssistantSnapshotExtension
 from syrupy.assertion import SnapshotAssertion
 
-from custom_components.eheimdigital._vendor.eheimdigital.classic_led_ctrl import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.classic_led_ctrl import (
     EheimDigitalClassicLEDControl,
 )
-from custom_components.eheimdigital._vendor.eheimdigital.classic_vario import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.classic_vario import (
     EheimDigitalClassicVario,
 )
-from custom_components.eheimdigital._vendor.eheimdigital.filter import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.filter import (
     EheimDigitalFilter,
 )
-from custom_components.eheimdigital._vendor.eheimdigital.heater import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.heater import (
     EheimDigitalHeater,
 )
-from custom_components.eheimdigital._vendor.eheimdigital.hub import EheimDigitalHub
-from custom_components.eheimdigital._vendor.eheimdigital.reeflex import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.hub import EheimDigitalHub
+from custom_components.eheimdigital_plus._vendor.eheimdigital.reeflex import (
     EheimDigitalReeflexUV,
 )
-from custom_components.eheimdigital._vendor.eheimdigital.types import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.types import (
     AcclimatePacket,
     CCVPacket,
     ClassicVarioDataPacket,
@@ -41,7 +41,7 @@ from custom_components.eheimdigital._vendor.eheimdigital.types import (
     ReeflexDataPacket,
     UsrDtaPacket,
 )
-from custom_components.eheimdigital.const import DOMAIN
+from custom_components.eheimdigital_plus.const import DOMAIN
 
 
 def load_json_object_fixture(filename: str) -> dict[str, Any]:
@@ -149,11 +149,11 @@ def eheimdigital_hub_mock(
     """Mock eheimdigital hub."""
     with (
         patch(
-            "custom_components.eheimdigital.coordinator.EheimDigitalHub",
+            "custom_components.eheimdigital_plus.coordinator.EheimDigitalHub",
             spec=EheimDigitalHub,
         ) as eheimdigital_hub_mock,
         patch(
-            "custom_components.eheimdigital.config_flow.EheimDigitalHub",
+            "custom_components.eheimdigital_plus.config_flow.EheimDigitalHub",
             new=eheimdigital_hub_mock,
         ),
     ):
@@ -175,7 +175,7 @@ async def init_integration(
 
     mock_config_entry.add_to_hass(hass)
     with patch(
-        "custom_components.eheimdigital.coordinator.asyncio.Event", new=mock_event
+        "custom_components.eheimdigital_plus.coordinator.asyncio.Event", new=mock_event
     ):
         await hass.config_entries.async_setup(mock_config_entry.entry_id)
 

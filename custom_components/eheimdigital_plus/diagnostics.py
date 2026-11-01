@@ -4,11 +4,13 @@
 from typing import Any
 
 from homeassistant.components.diagnostics import async_redact_data
+from homeassistant.const import CONF_HOST
 from homeassistant.core import HomeAssistant
 
 from .coordinator import EheimDigitalConfigEntry
 
 TO_REDACT = {
+    CONF_HOST,
     "emailAddr",
     "usrName",
     "api_usrName",
@@ -17,6 +19,9 @@ TO_REDACT = {
     "ssid",
     "psk",
     "wifi_password",
+    "stSSID",
+    "stPW",
+    "apPW",
 }
 
 

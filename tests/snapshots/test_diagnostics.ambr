@@ -67,7 +67,7 @@
           'from': '00:00:00:00:00:01',
           'fstTime': 0,
           'groupID': 0,
-          'host': 'eheimdigital',
+          'host': '**REDACTED**',
           'language': 'EN',
           'latestAvailableRevision': list([
             -1,
@@ -135,7 +135,7 @@
           'from': '00:00:00:00:00:02',
           'fstTime': 0,
           'groupID': 0,
-          'host': 'eheimdigital',
+          'host': '**REDACTED**',
           'language': 'EN',
           'latestAvailableRevision': list([
             -1,
@@ -204,7 +204,7 @@
           'from': '00:00:00:00:00:03',
           'fstTime': 720,
           'groupID': 0,
-          'host': 'eheimdigital',
+          'host': '**REDACTED**',
           'language': 'EN',
           'latestAvailableRevision': list([
             1024,
@@ -283,7 +283,7 @@
           'from': '00:00:00:00:00:04',
           'fstTime': 720,
           'groupID': 0,
-          'host': 'eheimdigital',
+          'host': '**REDACTED**',
           'language': 'DE',
           'latestAvailableRevision': list([
             1026,
@@ -356,7 +356,7 @@
           'from': '00:00:00:00:00:05',
           'fstTime': 0,
           'groupID': 0,
-          'host': 'eheimdigital',
+          'host': '**REDACTED**',
           'language': 'DE',
           'latestAvailableRevision': list([
             -1,
@@ -391,12 +391,12 @@
     }),
     'entry': dict({
       'data': dict({
-        'host': 'eheimdigital',
+        'host': '**REDACTED**',
       }),
       'disabled_by': None,
       'discovery_keys': dict({
       }),
-      'domain': 'eheimdigital',
+      'domain': 'eheimdigital_plus',
       'minor_version': 1,
       'options': dict({
       }),

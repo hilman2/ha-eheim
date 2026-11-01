@@ -5,10 +5,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from custom_components.eheimdigital._vendor.eheimdigital.filter import (
+from custom_components.eheimdigital_plus._vendor.eheimdigital.filter import (
     EheimDigitalFilter,
 )
-from custom_components.eheimdigital._vendor.eheimdigital.hub import EheimDigitalHub
+from custom_components.eheimdigital_plus._vendor.eheimdigital.hub import EheimDigitalHub
 
 
 async def test_packet_credentials_are_not_logged(

@@ -9,7 +9,9 @@ from homeassistant.components.light import EFFECT_OFF
 from ._vendor.eheimdigital.types import HeaterMode, LightMode
 
 LOGGER: Logger = getLogger(__package__)
-DOMAIN = "eheimdigital"
+DOMAIN = "eheimdigital_plus"
+LEGACY_DOMAIN = "eheimdigital"
+CONF_MIGRATE_FROM = "migrate_from"
 
 EFFECT_DAYCL_MODE = "daycl_mode"
 
