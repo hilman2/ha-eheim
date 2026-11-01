@@ -1,0 +1,24 @@
+EHEIM Digital custom integration
+
+The integration modules are derived from Home Assistant Core 2026.10.4:
+https://github.com/home-assistant/core/tree/2026.10.4/homeassistant/components/eheimdigital
+Copyright the Home Assistant contributors. Licensed under Apache-2.0.
+The Apache license is included in LICENSE in this directory.
+
+The device protocol package in _vendor/eheimdigital is derived from:
+https://codeberg.org/autinerd/eheimdigital
+Base commit: 55f3cd026f2349e8a5188a8788c2722e626d4998, version 1.7.1.
+Status sensor changes: aa9be592a72deb2a770ba22b6bb9c6f13acaf997.
+Copyright (c) 2023 autinerd. Licensed under MIT.
+The MIT license is included in _vendor/eheimdigital/LICENSE.
+
+Changes for ha-eheim include bundled relative imports, filter operating-time,
+pause, error, estimated-flow and estimated-power sensors, complete English and
+German translations, connection cleanup during configuration, redacted
+diagnostics, packet logging without payloads, and type-checking corrections.
+The Apache-2.0 license applies to the ha-eheim integration changes.
+The embedded protocol package retains its MIT license.
+
+The JSON integration metadata, icons and translations are adapted from the
+same Home Assistant integration. This custom integration is maintained by
+hilman2 and is not an official EHEIM or Home Assistant release.

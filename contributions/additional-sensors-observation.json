@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-11-01T11:28:29.246556+00:00",
+  "model": "professionel 5e 350",
+  "error_code": "NO_ERROR",
+  "estimated_flow_lph": 143,
+  "estimated_power_w": 7.7988750000000095,
+  "off_seconds": 0,
+  "feeding_pause_seconds": 0
+}

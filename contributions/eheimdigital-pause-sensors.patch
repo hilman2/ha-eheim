@@ -1,0 +1,217 @@
+diff --git a/homeassistant/components/eheimdigital/sensor.py b/homeassistant/components/eheimdigital/sensor.py
+index bed960eb..55262912 100644
+--- a/homeassistant/components/eheimdigital/sensor.py
++++ b/homeassistant/components/eheimdigital/sensor.py
+@@ -52,6 +52,26 @@ FILTER_DESCRIPTIONS: tuple[EheimDigitalSensorDescription[EheimDigitalFilter], ..
+         suggested_unit_of_measurement=UnitOfTime.DAYS,
+         entity_category=EntityCategory.DIAGNOSTIC,
+     ),
++    EheimDigitalSensorDescription[EheimDigitalFilter](
++        key="turn_off_time",
++        translation_key="turn_off_time",
++        value_fn=lambda device: device.turn_off_time,
++        device_class=SensorDeviceClass.DURATION,
++        native_unit_of_measurement=UnitOfTime.SECONDS,
++        suggested_unit_of_measurement=UnitOfTime.MINUTES,
++        suggested_display_precision=2,
++        entity_category=EntityCategory.DIAGNOSTIC,
++    ),
++    EheimDigitalSensorDescription[EheimDigitalFilter](
++        key="turn_feeding_time",
++        translation_key="turn_feeding_time",
++        value_fn=lambda device: device.turn_feeding_time,
++        device_class=SensorDeviceClass.DURATION,
++        native_unit_of_measurement=UnitOfTime.SECONDS,
++        suggested_unit_of_measurement=UnitOfTime.MINUTES,
++        suggested_display_precision=2,
++        entity_category=EntityCategory.DIAGNOSTIC,
++    ),
+ )
+ 
+ 
+diff --git a/tests/components/eheimdigital/snapshots/test_sensor.ambr b/tests/components/eheimdigital/snapshots/test_sensor.ambr
+index 488a372c..e48a4a40 100644
+--- a/tests/components/eheimdigital/snapshots/test_sensor.ambr
++++ b/tests/components/eheimdigital/snapshots/test_sensor.ambr
+@@ -283,3 +283,119 @@
+     'state': 'unknown',
+   })
+ # ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_remaining_off_time-entry]
++  EntityRegistryEntrySnapshot({
++    'aliases': list([
++      None,
++    ]),
++    'area_id': None,
++    'capabilities': None,
++    'config_entry_id': <ANY>,
++    'config_subentry_id': None,
++    'device_class': None,
++    'device_id': <DeviceEntry identifiers=[('eheimdigital', '00:00:00:00:00:04')]>,
++    'disabled_by': None,
++    'domain': 'sensor',
++    'entity_category': <EntityCategory.DIAGNOSTIC: 'diagnostic'>,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_remaining_off_time',
++    'has_entity_name': True,
++    'hidden_by': None,
++    'icon': None,
++    'id': <ANY>,
++    'labels': set({
++    }),
++    'name': None,
++    'object_id_base': 'Remaining off time',
++    'options': dict({
++      'sensor': dict({
++        'suggested_display_precision': 2,
++      }),
++      'sensor.private': dict({
++        'suggested_unit_of_measurement': <UnitOfTime.MINUTES: 'min'>,
++      }),
++    }),
++    'original_device_class': <SensorDeviceClass.DURATION: 'duration'>,
++    'original_icon': None,
++    'original_name': 'Remaining off time',
++    'platform': 'eheimdigital',
++    'previous_unique_id': None,
++    'suggested_object_id': None,
++    'supported_features': 0,
++    'translation_key': 'turn_off_time',
++    'unique_id': '00:00:00:00:00:04_turn_off_time',
++    'unit_of_measurement': <UnitOfTime.MINUTES: 'min'>,
++  })
++# ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_remaining_off_time-state]
++  StateSnapshot({
++    'attributes': ReadOnlyDict({
++      <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'duration',
++      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Mock filter Remaining off time',
++      <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: <UnitOfTime.MINUTES: 'min'>,
++    }),
++    'context': <ANY>,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_remaining_off_time',
++    'last_changed': <ANY>,
++    'last_reported': <ANY>,
++    'last_updated': <ANY>,
++    'state': 'unknown',
++  })
++# ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding-entry]
++  EntityRegistryEntrySnapshot({
++    'aliases': list([
++      None,
++    ]),
++    'area_id': None,
++    'capabilities': None,
++    'config_entry_id': <ANY>,
++    'config_subentry_id': None,
++    'device_class': None,
++    'device_id': <DeviceEntry identifiers=[('eheimdigital', '00:00:00:00:00:04')]>,
++    'disabled_by': None,
++    'domain': 'sensor',
++    'entity_category': <EntityCategory.DIAGNOSTIC: 'diagnostic'>,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding',
++    'has_entity_name': True,
++    'hidden_by': None,
++    'icon': None,
++    'id': <ANY>,
++    'labels': set({
++    }),
++    'name': None,
++    'object_id_base': 'Remaining off time after feeding',
++    'options': dict({
++      'sensor': dict({
++        'suggested_display_precision': 2,
++      }),
++      'sensor.private': dict({
++        'suggested_unit_of_measurement': <UnitOfTime.MINUTES: 'min'>,
++      }),
++    }),
++    'original_device_class': <SensorDeviceClass.DURATION: 'duration'>,
++    'original_icon': None,
++    'original_name': 'Remaining off time after feeding',
++    'platform': 'eheimdigital',
++    'previous_unique_id': None,
++    'suggested_object_id': None,
++    'supported_features': 0,
++    'translation_key': 'turn_feeding_time',
++    'unique_id': '00:00:00:00:00:04_turn_feeding_time',
++    'unit_of_measurement': <UnitOfTime.MINUTES: 'min'>,
++  })
++# ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding-state]
++  StateSnapshot({
++    'attributes': ReadOnlyDict({
++      <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'duration',
++      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Mock filter Remaining off time after feeding',
++      <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: <UnitOfTime.MINUTES: 'min'>,
++    }),
++    'context': <ANY>,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding',
++    'last_changed': <ANY>,
++    'last_reported': <ANY>,
++    'last_updated': <ANY>,
++    'state': 'unknown',
++  })
++# ---
+diff --git a/tests/components/eheimdigital/test_sensor.py b/tests/components/eheimdigital/test_sensor.py
+index a78e0155..1980aa4c 100644
+--- a/tests/components/eheimdigital/test_sensor.py
++++ b/tests/components/eheimdigital/test_sensor.py
+@@ -92,6 +92,48 @@ async def test_setup(
+                     100,
+                     str(round(100 / 24, 2)),
+                 ),
++                (
++                    "sensor.mock_aquarium_mock_filter_remaining_off_time",
++                    "filter_data",
++                    "turnOffTime",
++                    61,
++                    1.02,
++                ),
++                (
++                    "sensor.mock_aquarium_mock_filter_remaining_off_time",
++                    "filter_data",
++                    "turnOffTime",
++                    0,
++                    "0.00",
++                ),
++                (
++                    "sensor.mock_aquarium_mock_filter_remaining_off_time",
++                    "filter_data",
++                    "turnOffTime",
++                    1,
++                    0.02,
++                ),
++                (
++                    "sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding",
++                    "filter_data",
++                    "turnTimeFeeding",
++                    61,
++                    1.02,
++                ),
++                (
++                    "sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding",
++                    "filter_data",
++                    "turnTimeFeeding",
++                    0,
++                    "0.00",
++                ),
++                (
++                    "sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding",
++                    "filter_data",
++                    "turnTimeFeeding",
++                    1,
++                    0.02,
++                ),
+             ],
+         ),
+     ],
+@@ -102,7 +144,7 @@ async def test_state_update(
+     eheimdigital_hub_mock: MagicMock,
+     mock_config_entry: MockConfigEntry,
+     device_name: str,
+-    entity_list: list[tuple[str, str, str, float, float]],
++    entity_list: list[tuple[str, str, str, float, float | str]],
+     request: pytest.FixtureRequest,
+ ) -> None:
+     """Test the sensor state update."""

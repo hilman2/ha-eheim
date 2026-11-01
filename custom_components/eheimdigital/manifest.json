@@ -1,0 +1,16 @@
+{
+  "domain": "eheimdigital",
+  "name": "EHEIM Digital",
+  "codeowners": ["@hilman2"],
+  "config_flow": true,
+  "documentation": "https://github.com/hilman2/ha-eheim",
+  "integration_type": "hub",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/hilman2/ha-eheim/issues",
+  "loggers": ["custom_components.eheimdigital"],
+  "requirements": [],
+  "version": "0.1.0",
+  "zeroconf": [
+    { "name": "eheimdigital._http._tcp.local.", "type": "_http._tcp.local." }
+  ]
+}

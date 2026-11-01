@@ -1,0 +1,211 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Das Gerät ist bereits eingerichtet",
+      "unique_id_mismatch": "Die Gerätekennung stimmt nicht mit der bisherigen Kennung überein"
+    },
+    "error": {
+      "cannot_connect": "Verbindung fehlgeschlagen",
+      "unknown": "Unerwarteter Fehler"
+    },
+    "step": {
+      "discovery_confirm": {
+        "description": "Möchtest du EHEIM Digital einrichten?"
+      },
+      "reconfigure": {
+        "data": {
+          "host": "Host"
+        },
+        "data_description": {
+          "host": "Hostname oder IP-Adresse des Hauptgeräts, zum Beispiel 192.168.1.50."
+        }
+      },
+      "user": {
+        "data": {
+          "host": "Host"
+        },
+        "data_description": {
+          "host": "Hostname oder IP-Adresse des Hauptgeräts, zum Beispiel 192.168.1.50."
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "is_lighting": {
+        "state": {
+          "off": "Aus",
+          "on": "An"
+        }
+      },
+      "is_uvc_connected": {
+        "name": "UVC-Lampe angeschlossen"
+      }
+    },
+    "climate": {
+      "heater": {
+        "state_attributes": {
+          "preset_mode": {
+            "state": {
+              "bio_mode": "Bio-Modus",
+              "smart_mode": "Smart-Modus"
+            }
+          }
+        }
+      }
+    },
+    "light": {
+      "channel": {
+        "name": "Kanal {channel_id}",
+        "state_attributes": {
+          "effect": {
+            "state": {
+              "daycl_mode": "Tageszyklus"
+            }
+          }
+        }
+      }
+    },
+    "number": {
+      "booster_time": {
+        "name": "Booster-Dauer"
+      },
+      "daily_burn_time": {
+        "name": "Tägliche Leuchtdauer"
+      },
+      "day_speed": {
+        "name": "Tagesdrehzahl"
+      },
+      "high_pulse_time": {
+        "name": "Pulsdauer bei hoher Drehzahl"
+      },
+      "low_pulse_time": {
+        "name": "Pulsdauer bei niedriger Drehzahl"
+      },
+      "manual_speed": {
+        "name": "Manuelle Drehzahl"
+      },
+      "night_speed": {
+        "name": "Nachtdrehzahl"
+      },
+      "night_temperature_offset": {
+        "name": "Nächtliche Temperaturabsenkung"
+      },
+      "pause_time": {
+        "name": "Pausendauer"
+      },
+      "system_led": {
+        "name": "Helligkeit der System-LED"
+      },
+      "temperature_offset": {
+        "name": "Temperaturkorrektur"
+      }
+    },
+    "select": {
+      "const_flow_speed": {
+        "name": "Konstanter Durchfluss"
+      },
+      "day_speed": {
+        "name": "Tagesdrehzahl"
+      },
+      "filter_mode": {
+        "name": "Filtermodus",
+        "state": {
+          "bio": "Bio",
+          "constant_flow": "Konstanter Durchfluss",
+          "manual": "Manuell",
+          "pulse": "Puls"
+        }
+      },
+      "high_pulse_speed": {
+        "name": "Hohe Pulsdrehzahl"
+      },
+      "low_pulse_speed": {
+        "name": "Niedrige Pulsdrehzahl"
+      },
+      "manual_speed": {
+        "name": "Manuelle Drehzahl"
+      },
+      "mode": {
+        "name": "Betriebsmodus",
+        "state": {
+          "constant": "Konstant",
+          "daycycle": "Tageszyklus"
+        }
+      },
+      "night_speed": {
+        "name": "Nachtdrehzahl"
+      }
+    },
+    "sensor": {
+      "current_speed": {
+        "name": "Aktuelle Drehzahl"
+      },
+      "error_code": {
+        "name": "Fehlerstatus",
+        "state": {
+          "air_in_filter": "Luft im Filter",
+          "no_error": "Kein Fehler",
+          "rotor_stuck": "Rotor blockiert",
+          "temperature_error": "Temperaturfehler",
+          "unknown_error": "Unbekannter Fehler"
+        }
+      },
+      "estimated_flow_rate": {
+        "name": "Geschätzter Durchfluss"
+      },
+      "estimated_power": {
+        "name": "Geschätzte Leistungsaufnahme"
+      },
+      "operating_time": {
+        "name": "Betriebsdauer"
+      },
+      "remaining_booster_time": {
+        "name": "Verbleibende Booster-Dauer"
+      },
+      "remaining_pause_time": {
+        "name": "Verbleibende Pausendauer"
+      },
+      "service_hours": {
+        "name": "Verbleibende Zeit bis zur Wartung"
+      },
+      "time_until_next_service": {
+        "name": "Zeit bis zur nächsten Wartung"
+      },
+      "turn_feeding_time": {
+        "name": "Verbleibende Fütterungspause"
+      },
+      "turn_off_time": {
+        "name": "Verbleibende Ausschaltzeit"
+      }
+    },
+    "switch": {
+      "booster": {
+        "name": "Booster"
+      },
+      "expert": {
+        "name": "Expertenmodus"
+      },
+      "pause": {
+        "name": "Pause"
+      }
+    },
+    "time": {
+      "day_start_time": {
+        "name": "Tagesbeginn"
+      },
+      "night_start_time": {
+        "name": "Nachtbeginn"
+      },
+      "start_time": {
+        "name": "Startzeit"
+      }
+    }
+  },
+  "exceptions": {
+    "communication_error": {
+      "message": "Fehler bei der Kommunikation mit dem EHEIM-Digital-Hauptgerät: {error}"
+    }
+  },
+  "title": "EHEIM Digital"
+}

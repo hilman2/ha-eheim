@@ -1,0 +1,14 @@
+{
+  "url": "https://codeberg.org/autinerd/eheimdigital/pulls/10",
+  "state": "open",
+  "head": "aa9be592a72deb2a770ba22b6bb9c6f13acaf997",
+  "files": [
+    "eheimdigital/filter.py",
+    "eheimdigital/types.py",
+    "tests/fixtures/filter_data.json",
+    "tests/fixtures/usrdta_filter.json",
+    "tests/test_filter.py",
+    "tests/test_hub.py"
+  ],
+  "reviews": []
+}

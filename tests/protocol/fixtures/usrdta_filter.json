@@ -1,0 +1,45 @@
+{
+  "aqName": "Test tank",
+  "build": [
+    "0",
+    "0"
+  ],
+  "demoUse": 0,
+  "dst": 0,
+  "emailAddr": "",
+  "firmwareAvailable": 0,
+  "firstStart": 0,
+  "from": "AA:BB:CC:DD:EE:01",
+  "fstTime": 0,
+  "groupID": 0,
+  "host": "eheimdigital",
+  "language": "EN",
+  "latestAvailableRevision": [
+    1000,
+    1000,
+    0,
+    0
+  ],
+  "liveTime": 0,
+  "meshing": 1,
+  "name": "Test filter",
+  "netmode": "ST",
+  "power": "0",
+  "remote": 0,
+  "revision": [
+    1000,
+    1000
+  ],
+  "sstTime": 0,
+  "stMail": 0,
+  "stMailMode": 0,
+  "sysLED": 0,
+  "tID": 0,
+  "tankconfig": "WITHOUT_THERMO",
+  "timezone": 0,
+  "title": "USRDTA",
+  "to": "USER",
+  "unit": 0,
+  "usrName": "",
+  "version": 4
+}

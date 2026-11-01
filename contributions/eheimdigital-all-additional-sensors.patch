@@ -1,0 +1,572 @@
+diff --git a/homeassistant/components/eheimdigital/sensor.py b/homeassistant/components/eheimdigital/sensor.py
+index bed960eb..3303e768 100644
+--- a/homeassistant/components/eheimdigital/sensor.py
++++ b/homeassistant/components/eheimdigital/sensor.py
+@@ -7,14 +7,22 @@ from typing import Any, override
+ from eheimdigital.classic_vario import EheimDigitalClassicVario
+ from eheimdigital.device import EheimDigitalDevice
+ from eheimdigital.filter import EheimDigitalFilter
+-from eheimdigital.types import FilterErrorCode
++from eheimdigital.types import FilterErrorCode, FilterErrorCodeProf
+ 
+ from homeassistant.components.sensor import (
+     SensorDeviceClass,
+     SensorEntity,
+     SensorEntityDescription,
++    SensorStateClass,
++)
++from homeassistant.const import (
++    PERCENTAGE,
++    EntityCategory,
++    UnitOfFrequency,
++    UnitOfPower,
++    UnitOfTime,
++    UnitOfVolumeFlowRate,
+ )
+-from homeassistant.const import PERCENTAGE, EntityCategory, UnitOfFrequency, UnitOfTime
+ from homeassistant.core import HomeAssistant
+ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+ 
+@@ -43,6 +51,32 @@ FILTER_DESCRIPTIONS: tuple[EheimDigitalSensorDescription[EheimDigitalFilter], ..
+         suggested_display_precision=1,
+         native_unit_of_measurement=UnitOfFrequency.HERTZ,
+     ),
++    EheimDigitalSensorDescription[EheimDigitalFilter](
++        key="error_code",
++        translation_key="error_code",
++        value_fn=lambda device: device.error_code.name.lower(),
++        device_class=SensorDeviceClass.ENUM,
++        options=[name.lower() for name in FilterErrorCodeProf.__members__],
++        entity_category=EntityCategory.DIAGNOSTIC,
++    ),
++    EheimDigitalSensorDescription[EheimDigitalFilter](
++        key="estimated_flow_rate",
++        translation_key="estimated_flow_rate",
++        value_fn=lambda device: device.estimated_flow_rate,
++        device_class=SensorDeviceClass.VOLUME_FLOW_RATE,
++        native_unit_of_measurement=UnitOfVolumeFlowRate.LITERS_PER_HOUR,
++        state_class=SensorStateClass.MEASUREMENT,
++        suggested_display_precision=0,
++    ),
++    EheimDigitalSensorDescription[EheimDigitalFilter](
++        key="estimated_power",
++        translation_key="estimated_power",
++        value_fn=lambda device: device.estimated_power,
++        device_class=SensorDeviceClass.POWER,
++        native_unit_of_measurement=UnitOfPower.WATT,
++        state_class=SensorStateClass.MEASUREMENT,
++        suggested_display_precision=2,
++    ),
+     EheimDigitalSensorDescription[EheimDigitalFilter](
+         key="service_hours",
+         translation_key="service_hours",
+@@ -52,6 +86,26 @@ FILTER_DESCRIPTIONS: tuple[EheimDigitalSensorDescription[EheimDigitalFilter], ..
+         suggested_unit_of_measurement=UnitOfTime.DAYS,
+         entity_category=EntityCategory.DIAGNOSTIC,
+     ),
++    EheimDigitalSensorDescription[EheimDigitalFilter](
++        key="turn_off_time",
++        translation_key="turn_off_time",
++        value_fn=lambda device: device.turn_off_time,
++        device_class=SensorDeviceClass.DURATION,
++        native_unit_of_measurement=UnitOfTime.SECONDS,
++        suggested_unit_of_measurement=UnitOfTime.MINUTES,
++        suggested_display_precision=2,
++        entity_category=EntityCategory.DIAGNOSTIC,
++    ),
++    EheimDigitalSensorDescription[EheimDigitalFilter](
++        key="turn_feeding_time",
++        translation_key="turn_feeding_time",
++        value_fn=lambda device: device.turn_feeding_time,
++        device_class=SensorDeviceClass.DURATION,
++        native_unit_of_measurement=UnitOfTime.SECONDS,
++        suggested_unit_of_measurement=UnitOfTime.MINUTES,
++        suggested_display_precision=2,
++        entity_category=EntityCategory.DIAGNOSTIC,
++    ),
+ )
+ 
+ 
+diff --git a/homeassistant/components/eheimdigital/strings.json b/homeassistant/components/eheimdigital/strings.json
+index ce090900..b963fa19 100644
+--- a/homeassistant/components/eheimdigital/strings.json
++++ b/homeassistant/components/eheimdigital/strings.json
+@@ -141,9 +141,17 @@
+         "state": {
+           "air_in_filter": "Air in filter",
+           "no_error": "No error",
+-          "rotor_stuck": "Rotor stuck"
++          "rotor_stuck": "Rotor stuck",
++          "temperature_error": "Temperature error",
++          "unknown_error": "Unknown error"
+         }
+       },
++      "estimated_flow_rate": {
++        "name": "Estimated flow rate"
++      },
++      "estimated_power": {
++        "name": "Estimated power"
++      },
+       "operating_time": {
+         "name": "Operating time"
+       },
+diff --git a/tests/components/eheimdigital/snapshots/test_sensor.ambr b/tests/components/eheimdigital/snapshots/test_sensor.ambr
+index 488a372c..495d21bd 100644
+--- a/tests/components/eheimdigital/snapshots/test_sensor.ambr
++++ b/tests/components/eheimdigital/snapshots/test_sensor.ambr
+@@ -225,6 +225,188 @@
+     'state': 'unknown',
+   })
+ # ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_error_code-entry]
++  EntityRegistryEntrySnapshot({
++    'aliases': list([
++      None,
++    ]),
++    'area_id': None,
++    'capabilities': dict({
++      <SensorEntityCapabilityAttribute.OPTIONS: 'options'>: list([
++        'unknown_error',
++        'no_error',
++        'rotor_stuck',
++        'air_in_filter',
++        'temperature_error',
++      ]),
++    }),
++    'config_entry_id': <ANY>,
++    'config_subentry_id': None,
++    'device_class': None,
++    'device_id': <DeviceEntry identifiers=[('eheimdigital', '00:00:00:00:00:04')]>,
++    'disabled_by': None,
++    'domain': 'sensor',
++    'entity_category': <EntityCategory.DIAGNOSTIC: 'diagnostic'>,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_error_code',
++    'has_entity_name': True,
++    'hidden_by': None,
++    'icon': None,
++    'id': <ANY>,
++    'labels': set({
++    }),
++    'name': None,
++    'object_id_base': 'Error code',
++    'options': dict({
++    }),
++    'original_device_class': <SensorDeviceClass.ENUM: 'enum'>,
++    'original_icon': None,
++    'original_name': 'Error code',
++    'platform': 'eheimdigital',
++    'previous_unique_id': None,
++    'suggested_object_id': None,
++    'supported_features': 0,
++    'translation_key': 'error_code',
++    'unique_id': '00:00:00:00:00:04_error_code',
++    'unit_of_measurement': None,
++  })
++# ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_error_code-state]
++  StateSnapshot({
++    'attributes': ReadOnlyDict({
++      <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'enum',
++      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Mock filter Error code',
++      <SensorEntityCapabilityAttribute.OPTIONS: 'options'>: list([
++        'unknown_error',
++        'no_error',
++        'rotor_stuck',
++        'air_in_filter',
++        'temperature_error',
++      ]),
++    }),
++    'context': <ANY>,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_error_code',
++    'last_changed': <ANY>,
++    'last_reported': <ANY>,
++    'last_updated': <ANY>,
++    'state': 'unknown',
++  })
++# ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_estimated_flow_rate-entry]
++  EntityRegistryEntrySnapshot({
++    'aliases': list([
++      None,
++    ]),
++    'area_id': None,
++    'capabilities': dict({
++      <SensorEntityCapabilityAttribute.STATE_CLASS: 'state_class'>: <SensorStateClass.MEASUREMENT: 'measurement'>,
++    }),
++    'config_entry_id': <ANY>,
++    'config_subentry_id': None,
++    'device_class': None,
++    'device_id': <DeviceEntry identifiers=[('eheimdigital', '00:00:00:00:00:04')]>,
++    'disabled_by': None,
++    'domain': 'sensor',
++    'entity_category': None,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_estimated_flow_rate',
++    'has_entity_name': True,
++    'hidden_by': None,
++    'icon': None,
++    'id': <ANY>,
++    'labels': set({
++    }),
++    'name': None,
++    'object_id_base': 'Estimated flow rate',
++    'options': dict({
++      'sensor': dict({
++        'suggested_display_precision': 0,
++      }),
++    }),
++    'original_device_class': <SensorDeviceClass.VOLUME_FLOW_RATE: 'volume_flow_rate'>,
++    'original_icon': None,
++    'original_name': 'Estimated flow rate',
++    'platform': 'eheimdigital',
++    'previous_unique_id': None,
++    'suggested_object_id': None,
++    'supported_features': 0,
++    'translation_key': 'estimated_flow_rate',
++    'unique_id': '00:00:00:00:00:04_estimated_flow_rate',
++    'unit_of_measurement': <UnitOfVolumeFlowRate.LITERS_PER_HOUR: 'L/h'>,
++  })
++# ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_estimated_flow_rate-state]
++  StateSnapshot({
++    'attributes': ReadOnlyDict({
++      <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'volume_flow_rate',
++      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Mock filter Estimated flow rate',
++      <SensorEntityCapabilityAttribute.STATE_CLASS: 'state_class'>: <SensorStateClass.MEASUREMENT: 'measurement'>,
++      <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: <UnitOfVolumeFlowRate.LITERS_PER_HOUR: 'L/h'>,
++    }),
++    'context': <ANY>,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_estimated_flow_rate',
++    'last_changed': <ANY>,
++    'last_reported': <ANY>,
++    'last_updated': <ANY>,
++    'state': 'unknown',
++  })
++# ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_estimated_power-entry]
++  EntityRegistryEntrySnapshot({
++    'aliases': list([
++      None,
++    ]),
++    'area_id': None,
++    'capabilities': dict({
++      <SensorEntityCapabilityAttribute.STATE_CLASS: 'state_class'>: <SensorStateClass.MEASUREMENT: 'measurement'>,
++    }),
++    'config_entry_id': <ANY>,
++    'config_subentry_id': None,
++    'device_class': None,
++    'device_id': <DeviceEntry identifiers=[('eheimdigital', '00:00:00:00:00:04')]>,
++    'disabled_by': None,
++    'domain': 'sensor',
++    'entity_category': None,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_estimated_power',
++    'has_entity_name': True,
++    'hidden_by': None,
++    'icon': None,
++    'id': <ANY>,
++    'labels': set({
++    }),
++    'name': None,
++    'object_id_base': 'Estimated power',
++    'options': dict({
++      'sensor': dict({
++        'suggested_display_precision': 2,
++      }),
++    }),
++    'original_device_class': <SensorDeviceClass.POWER: 'power'>,
++    'original_icon': None,
++    'original_name': 'Estimated power',
++    'platform': 'eheimdigital',
++    'previous_unique_id': None,
++    'suggested_object_id': None,
++    'supported_features': 0,
++    'translation_key': 'estimated_power',
++    'unique_id': '00:00:00:00:00:04_estimated_power',
++    'unit_of_measurement': <UnitOfPower.WATT: 'W'>,
++  })
++# ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_estimated_power-state]
++  StateSnapshot({
++    'attributes': ReadOnlyDict({
++      <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'power',
++      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Mock filter Estimated power',
++      <SensorEntityCapabilityAttribute.STATE_CLASS: 'state_class'>: <SensorStateClass.MEASUREMENT: 'measurement'>,
++      <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: <UnitOfPower.WATT: 'W'>,
++    }),
++    'context': <ANY>,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_estimated_power',
++    'last_changed': <ANY>,
++    'last_reported': <ANY>,
++    'last_updated': <ANY>,
++    'state': 'unknown',
++  })
++# ---
+ # name: test_setup[sensor.mock_aquarium_mock_filter_remaining_hours_until_service-entry]
+   EntityRegistryEntrySnapshot({
+     'aliases': list([
+@@ -283,3 +465,119 @@
+     'state': 'unknown',
+   })
+ # ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_remaining_off_time-entry]
++  EntityRegistryEntrySnapshot({
++    'aliases': list([
++      None,
++    ]),
++    'area_id': None,
++    'capabilities': None,
++    'config_entry_id': <ANY>,
++    'config_subentry_id': None,
++    'device_class': None,
++    'device_id': <DeviceEntry identifiers=[('eheimdigital', '00:00:00:00:00:04')]>,
++    'disabled_by': None,
++    'domain': 'sensor',
++    'entity_category': <EntityCategory.DIAGNOSTIC: 'diagnostic'>,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_remaining_off_time',
++    'has_entity_name': True,
++    'hidden_by': None,
++    'icon': None,
++    'id': <ANY>,
++    'labels': set({
++    }),
++    'name': None,
++    'object_id_base': 'Remaining off time',
++    'options': dict({
++      'sensor': dict({
++        'suggested_display_precision': 2,
++      }),
++      'sensor.private': dict({
++        'suggested_unit_of_measurement': <UnitOfTime.MINUTES: 'min'>,
++      }),
++    }),
++    'original_device_class': <SensorDeviceClass.DURATION: 'duration'>,
++    'original_icon': None,
++    'original_name': 'Remaining off time',
++    'platform': 'eheimdigital',
++    'previous_unique_id': None,
++    'suggested_object_id': None,
++    'supported_features': 0,
++    'translation_key': 'turn_off_time',
++    'unique_id': '00:00:00:00:00:04_turn_off_time',
++    'unit_of_measurement': <UnitOfTime.MINUTES: 'min'>,
++  })
++# ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_remaining_off_time-state]
++  StateSnapshot({
++    'attributes': ReadOnlyDict({
++      <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'duration',
++      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Mock filter Remaining off time',
++      <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: <UnitOfTime.MINUTES: 'min'>,
++    }),
++    'context': <ANY>,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_remaining_off_time',
++    'last_changed': <ANY>,
++    'last_reported': <ANY>,
++    'last_updated': <ANY>,
++    'state': 'unknown',
++  })
++# ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding-entry]
++  EntityRegistryEntrySnapshot({
++    'aliases': list([
++      None,
++    ]),
++    'area_id': None,
++    'capabilities': None,
++    'config_entry_id': <ANY>,
++    'config_subentry_id': None,
++    'device_class': None,
++    'device_id': <DeviceEntry identifiers=[('eheimdigital', '00:00:00:00:00:04')]>,
++    'disabled_by': None,
++    'domain': 'sensor',
++    'entity_category': <EntityCategory.DIAGNOSTIC: 'diagnostic'>,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding',
++    'has_entity_name': True,
++    'hidden_by': None,
++    'icon': None,
++    'id': <ANY>,
++    'labels': set({
++    }),
++    'name': None,
++    'object_id_base': 'Remaining off time after feeding',
++    'options': dict({
++      'sensor': dict({
++        'suggested_display_precision': 2,
++      }),
++      'sensor.private': dict({
++        'suggested_unit_of_measurement': <UnitOfTime.MINUTES: 'min'>,
++      }),
++    }),
++    'original_device_class': <SensorDeviceClass.DURATION: 'duration'>,
++    'original_icon': None,
++    'original_name': 'Remaining off time after feeding',
++    'platform': 'eheimdigital',
++    'previous_unique_id': None,
++    'suggested_object_id': None,
++    'supported_features': 0,
++    'translation_key': 'turn_feeding_time',
++    'unique_id': '00:00:00:00:00:04_turn_feeding_time',
++    'unit_of_measurement': <UnitOfTime.MINUTES: 'min'>,
++  })
++# ---
++# name: test_setup[sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding-state]
++  StateSnapshot({
++    'attributes': ReadOnlyDict({
++      <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'duration',
++      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'Mock filter Remaining off time after feeding',
++      <EntityStateAttribute.UNIT_OF_MEASUREMENT: 'unit_of_measurement'>: <UnitOfTime.MINUTES: 'min'>,
++    }),
++    'context': <ANY>,
++    'entity_id': 'sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding',
++    'last_changed': <ANY>,
++    'last_reported': <ANY>,
++    'last_updated': <ANY>,
++    'state': 'unknown',
++  })
++# ---
+diff --git a/tests/components/eheimdigital/test_sensor.py b/tests/components/eheimdigital/test_sensor.py
+index a78e0155..cc828388 100644
+--- a/tests/components/eheimdigital/test_sensor.py
++++ b/tests/components/eheimdigital/test_sensor.py
+@@ -17,6 +17,10 @@ from homeassistant.helpers import entity_registry as er
+ 
+ from .conftest import init_integration
+ 
++FILTER_ERROR_ENTITY_ID = "sensor.mock_aquarium_mock_filter_error_code"
++FILTER_FLOW_ENTITY_ID = "sensor.mock_aquarium_mock_filter_estimated_flow_rate"
++FILTER_POWER_ENTITY_ID = "sensor.mock_aquarium_mock_filter_estimated_power"
++
+ 
+ async def test_setup(
+     hass: HomeAssistant,
+@@ -92,6 +96,48 @@ async def test_setup(
+                     100,
+                     str(round(100 / 24, 2)),
+                 ),
++                (
++                    "sensor.mock_aquarium_mock_filter_remaining_off_time",
++                    "filter_data",
++                    "turnOffTime",
++                    61,
++                    1.02,
++                ),
++                (
++                    "sensor.mock_aquarium_mock_filter_remaining_off_time",
++                    "filter_data",
++                    "turnOffTime",
++                    0,
++                    "0.00",
++                ),
++                (
++                    "sensor.mock_aquarium_mock_filter_remaining_off_time",
++                    "filter_data",
++                    "turnOffTime",
++                    1,
++                    0.02,
++                ),
++                (
++                    "sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding",
++                    "filter_data",
++                    "turnTimeFeeding",
++                    61,
++                    1.02,
++                ),
++                (
++                    "sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding",
++                    "filter_data",
++                    "turnTimeFeeding",
++                    0,
++                    "0.00",
++                ),
++                (
++                    "sensor.mock_aquarium_mock_filter_remaining_off_time_after_feeding",
++                    "filter_data",
++                    "turnTimeFeeding",
++                    1,
++                    0.02,
++                ),
+             ],
+         ),
+     ],
+@@ -102,7 +148,7 @@ async def test_state_update(
+     eheimdigital_hub_mock: MagicMock,
+     mock_config_entry: MockConfigEntry,
+     device_name: str,
+-    entity_list: list[tuple[str, str, str, float, float]],
++    entity_list: list[tuple[str, str, str, float, float | str]],
+     request: pytest.FixtureRequest,
+ ) -> None:
+     """Test the sensor state update."""
+@@ -119,3 +165,73 @@ async def test_state_update(
+         getattr(device, item[1])[item[2]] = item[3]
+         await eheimdigital_hub_mock.call_args.kwargs["receive_callback"]()
+         assert get_sensor_display_state(hass, entity_registry, item[0]) == str(item[4])
++
++
++@pytest.mark.parametrize(
++    ("payload", "entity_id", "expected"),
++    [
++        pytest.param(
++            {"pumpMode": 16}, FILTER_ERROR_ENTITY_ID, "no_error", id="no_error"
++        ),
++        pytest.param(
++            {"pumpMode": 528}, FILTER_ERROR_ENTITY_ID, "rotor_stuck", id="rotor"
++        ),
++        pytest.param(
++            {"pumpMode": 784}, FILTER_ERROR_ENTITY_ID, "air_in_filter", id="air"
++        ),
++        pytest.param(
++            {"pumpMode": 1296},
++            FILTER_ERROR_ENTITY_ID,
++            "temperature_error",
++            id="temperature",
++        ),
++        pytest.param(
++            {"pumpMode": 272},
++            FILTER_ERROR_ENTITY_ID,
++            "unknown_error",
++            id="unknown_error",
++        ),
++        pytest.param(
++            {"pumpMode": 16912},
++            FILTER_ERROR_ENTITY_ID,
++            "rotor_stuck",
++            id="calibration_and_error",
++        ),
++        pytest.param(
++            {"freq": 3500, "dfsFaktor": 683}, FILTER_FLOW_ENTITY_ID, "143", id="flow"
++        ),
++        pytest.param(
++            {"freq": 3500, "dfsFaktor": 683, "filterActive": 0},
++            FILTER_FLOW_ENTITY_ID,
++            "0",
++            id="stopped_flow",
++        ),
++        pytest.param(
++            {"freq": 3500, "dfsFaktor": 683}, FILTER_POWER_ENTITY_ID, "7.80", id="power"
++        ),
++        pytest.param(
++            {"filterActive": 0}, FILTER_POWER_ENTITY_ID, "1.00", id="standby_power"
++        ),
++        pytest.param(
++            {"freq": 8000, "dfsFaktor": 8200},
++            FILTER_POWER_ENTITY_ID,
++            "unknown",
++            id="invalid_power_curve",
++        ),
++    ],
++)
++async def test_filter_status_updates(
++    hass: HomeAssistant,
++    entity_registry: er.EntityRegistry,
++    eheimdigital_hub_mock: MagicMock,
++    mock_config_entry: MockConfigEntry,
++    filter_mock: MagicMock,
++    payload: dict[str, int],
++    entity_id: str,
++    expected: str,
++) -> None:
++    """Expose library status updates as correctly formatted sensor states."""
++    await init_integration(hass, mock_config_entry)
++    filter_mock.filter_data.update(payload)
++    await eheimdigital_hub_mock.call_args.kwargs["receive_callback"]()
++    assert get_sensor_display_state(hass, entity_registry, entity_id) == expected
