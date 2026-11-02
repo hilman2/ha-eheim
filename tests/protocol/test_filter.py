@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Manuel Hilgert <hilman2@gmail.com>
 """Tests for professionel5e status values."""
 
 import json
@@ -67,7 +68,14 @@ def test_error_code(
         (3500, 683, 1, 143),
         (7200, 1000, 1, 432),
         (0, 683, 1, 0),
-        (3500, 0, 1, 0),
+        (3500, 0, 1, 400),
+        (3500, 4, 1, 400),
+        (3625, 0, 1, 420),
+        (7200, 0, 1, 860),
+        (7500, 0, 1, 860),
+        (1750, 0, 1, 200),
+        (0, 0, 1, 0),
+        (3500, 0, 0, 0),
         (7200, 1000, 0, 0),
     ],
 )
@@ -86,6 +94,24 @@ def test_estimated_flow_rate(
     filter_data["dfsFaktor"] = factor
     filter_data["filterActive"] = active
     filter_device.usrdta["unit"] = unit
+    assert filter_device.estimated_flow_rate == expected
+
+
+@pytest.mark.parametrize(
+    ("version", "frequency", "expected"),
+    [(76, 7600, 980), (78, 8000, 1065), (78, 3800, 470), (99, 3500, None)],
+)
+def test_estimated_flow_rate_without_factor(
+    filter_device: EheimDigitalFilter,
+    filter_data: FilterDataPacket,
+    version: int,
+    frequency: int,
+    expected: int | None,
+) -> None:
+    """Fall back to each model's own tables and stay unknown without any."""
+    filter_data["version"] = version
+    filter_data["freq"] = frequency
+    filter_data["dfsFaktor"] = 0
     assert filter_device.estimated_flow_rate == expected
 
 

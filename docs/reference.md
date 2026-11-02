@@ -29,12 +29,13 @@ bedeutet Unterstützung in Home Assistant.
 | Verbleibende Ausschaltzeit | min | Verbleibende Dauer einer Ausschaltpause |
 | Verbleibende Fütterungspause | min | Restzeit der vom Gerät gemeldeten Fütterungspause |
 | Fehlerstatus | Enum | `no_error`, `rotor_stuck`, `air_in_filter`, `temperature_error` oder `unknown_error` |
-| Geschätzter Durchfluss | l/h | Aus Frequenz und Gerätefaktor berechnet |
+| Geschätzter Durchfluss | l/h | Aus Frequenz und Gerätefaktor berechnet, ohne Gerätefaktor Nennwert der Frequenz |
 | Geschätzte Leistungsaufnahme | W | Aus der Herstellerkennlinie berechnet |
 
 Die Anzeige des Fehlerstatus ist übersetzt. Automationen verwenden die oben
 genannten Zustandswerte. Kalibrierungsbits werden nicht als Fehler interpretiert.
-Eine ungültige Leistungskennlinie ergibt einen unbekannten Sensorwert.
+Eine ungültige Leistungskennlinie ergibt einen unbekannten Sensorwert. Dasselbe
+gilt für den Durchfluss eines Modells ohne Tabellen, wenn der Gerätefaktor fehlt.
 
 Die Core-Sensoren für Drehzahl und verbleibende Wartungszeit bleiben ebenfalls
 vorhanden. Wartungszeit und Betriebsdauer sind Gerätezähler; sie messen nicht
@@ -82,7 +83,11 @@ wenn du sie einstellen möchtest.
 ## Bekannte Grenzen
 
 Durchfluss und Leistungsaufnahme sind Schätzungen. Die Herstelleroberfläche
-kann je nach Filtermodus andere Durchflusswerte aus Tabellen anzeigen. Die
+kann je nach Filtermodus andere Durchflusswerte aus Tabellen anzeigen. Im
+manuellen Modus zeigt sie gar keinen Durchfluss. Meldet der Filter keinen
+Gerätefaktor, ist der Sensorwert der Nennwert der Frequenz ohne Verschmutzung und
+kann über dem tatsächlichen Durchfluss liegen. Sobald der Filter wieder einen
+Faktor meldet, springt der Wert auf die Berechnung mit diesem Faktor. Die
 berechnete Leistung ersetzt keinen Stromzähler. Die Betriebsdauer ist keine
 Energiemessung.
 
