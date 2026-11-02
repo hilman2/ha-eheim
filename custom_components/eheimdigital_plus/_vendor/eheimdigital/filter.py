@@ -1,8 +1,10 @@
 # Bundled and adapted for ha-eheim. See LICENSE and ../../NOTICE.
+# Copyright (c) 2026 Manuel Hilgert <hilman2@gmail.com>
 """The Eheim Digital professionel5e filter."""
 
 from __future__ import annotations
 
+from bisect import bisect_right
 from datetime import time, timedelta, timezone
 from functools import cached_property
 from logging import getLogger
@@ -28,6 +30,11 @@ _LOGGER = getLogger(__package__)
 _MIN_FREQUENCY = 35.0
 _MAX_FREQUENCY = 80.0
 _CALIBRATION_FLOW_FACTOR = 8000
+_FLOW_RATES_LPH = {
+    74: [400, 440, 480, 515, 550, 585, 620, 650, 680, 710, 740, 770, 800, 830, 860],
+    76: [400, 460, 515, 565, 610, 650, 690, 730, 770, 805, 840, 875, 910, 945, 980],
+    78: [400, 470, 540, 600, 650, 700, 745, 785, 825, 865, 905, 945, 985, 1025, 1065],
+}
 
 
 def _low_speed_power(frequency: float) -> float:
@@ -226,15 +233,47 @@ class EheimDigitalFilter(EheimDigitalDevice):
             return FilterErrorCodeProf.UNKNOWN_ERROR
 
     @property
-    def estimated_flow_rate(self) -> int:
-        """Return the vendor's base flow estimate in l/h, before mode substitutions."""
+    def estimated_flow_rate(self) -> int | None:
+        """Return the estimated flow in l/h, or None if the model has no flow table.
+
+        The estimate does not include the substitutions of the manufacturer's web UI.
+        """
         if self.filter_data is None:
             raise EheimDigitalDataMissingError
         if not self.is_active:
             return 0
-        return floor(
+        base_flow = floor(
             self.filter_data["freq"] * self.filter_data["dfsFaktor"] * 60 / 1_000_000
         )
+        # The filter can report dfsFaktor = 0 while the pump runs, which was seen in
+        # manual mode. The base formula then says 0 l/h although water is moving, so
+        # the frequency has to carry the estimate through the manufacturer's tables.
+        return base_flow if base_flow > 0 else self._nominal_flow_rate()
+
+    def _nominal_flow_rate(self) -> int | None:
+        """Return the table flow in l/h for the current frequency, or None if unknown.
+
+        Both manufacturer tables have one entry per speed step. Pairing them gives the
+        nominal flow of a frequency, which ignores how clogged the filter is. Speeds
+        between two steps are interpolated, and the top step is the upper limit.
+        """
+        if self.filter_data is None:
+            raise EheimDigitalDataMissingError
+        table = _FLOW_RATES_LPH.get(self.filter_data["version"])
+        if table is None:
+            return None
+        # The added origin covers the ramp-up below the first step and a stopped rotor.
+        frequencies = [0.0, *self.filter_manual_values]
+        flows = [0, *table]
+        frequency = self.current_speed
+        upper = bisect_right(frequencies, frequency)
+        if upper == len(frequencies):
+            return flows[-1]
+        lower = upper - 1
+        step_share = (frequency - frequencies[lower]) / (
+            frequencies[upper] - frequencies[lower]
+        )
+        return floor(flows[lower] + step_share * (flows[upper] - flows[lower]))
 
     @property
     def estimated_power(self) -> float | None:
@@ -579,23 +618,7 @@ class EheimDigitalFilter(EheimDigitalDevice):
         match self.filter_data["version"]:
             case 74:
                 return (
-                    [
-                        400,
-                        440,
-                        480,
-                        515,
-                        550,
-                        585,
-                        620,
-                        650,
-                        680,
-                        710,
-                        740,
-                        770,
-                        800,
-                        830,
-                        860,
-                    ]
+                    _FLOW_RATES_LPH[74]
                     if self.usrdta["unit"] == int(UnitOfMeasurement.METRIC)
                     else [
                         110,
@@ -617,23 +640,7 @@ class EheimDigitalFilter(EheimDigitalDevice):
                 )
             case 76:
                 return (
-                    [
-                        400,
-                        460,
-                        515,
-                        565,
-                        610,
-                        650,
-                        690,
-                        730,
-                        770,
-                        805,
-                        840,
-                        875,
-                        910,
-                        945,
-                        980,
-                    ]
+                    _FLOW_RATES_LPH[76]
                     if self.usrdta["unit"] == int(UnitOfMeasurement.METRIC)
                     else [
                         110,
@@ -655,23 +662,7 @@ class EheimDigitalFilter(EheimDigitalDevice):
                 )
             case 78:
                 return (
-                    [
-                        400,
-                        470,
-                        540,
-                        600,
-                        650,
-                        700,
-                        745,
-                        785,
-                        825,
-                        865,
-                        905,
-                        945,
-                        985,
-                        1025,
-                        1065,
-                    ]
+                    _FLOW_RATES_LPH[78]
                     if self.usrdta["unit"] == int(UnitOfMeasurement.METRIC)
                     else [
                         110,

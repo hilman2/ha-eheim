@@ -75,7 +75,7 @@ Verbindungsprotokolle können Zugangsdaten enthalten.
 | `freq` | aktuelle Pumpenfrequenz, durch 100 teilen für Hz |
 | `freqSoll` | Sollfrequenz des manuellen Modus, durch 100 teilen für Hz |
 | `sollStep` | Index in der modellspezifischen Tabelle für konstanten Durchfluss |
-| `dfsFaktor` | Faktor für die Durchflussberechnung der Weboberfläche |
+| `dfsFaktor` | Faktor für die Durchflussberechnung der Weboberfläche, auch bei laufender Pumpe zeitweise 0 |
 | `dfs` | Rohwert; nicht unverändert als Liter pro Stunde verwenden |
 | `serviceHour` | verbleibende Stunden bis zur Wartung |
 | `runTime` | Betriebsdauer in Minuten laut Python-Bibliothek |
@@ -96,16 +96,37 @@ Die Weboberfläche berechnet zunächst folgenden Basiswert in l/h:
 floor(freq * dfsFaktor * 60 / 1_000_000)
 ```
 
-Mit den beobachteten Werten `freq = 3500` und `dfsFaktor = 683` ergibt das
-143 l/h. Gleichzeitig meldete das Paket `dfs = 239`.
-Der Rohwert ist daher kein unmittelbar übernehmbarer l/h-Sensor.
+Die Felder `freq` und `dfsFaktor` kamen am selben Filter in zwei Messungen so an,
+beide im manuellen Modus bei laufender Pumpe:
+
+| Messung | `freq` | `dfsFaktor` | `dfs` | Basiswert |
+| --- | --- | --- | --- | --- |
+| 1. November 2026 | 3500 | 683 | 239 | 143 l/h |
+| 2. November 2026 | 3500 | 0 | 0 | 0 l/h |
+
+Der Rohwert `dfs` ist daher kein unmittelbar übernehmbarer l/h-Sensor.
+Wann der Filter `dfsFaktor` liefert, ist nicht geklärt. Auch das aus Core
+übernommene Testpaket hat im manuellen Modus `dfsFaktor = 0`.
 Das Diagnosewerkzeug nennt den berechneten Wert `estimated_flow_lph`.
 Eine unabhängige Messung des tatsächlichen Wasserdurchflusses liegt nicht vor.
 
-Die Oberfläche kann den Basiswert im konstanten und im Bio-Modus durch einen
-Tabellenwert ersetzen, abhängig von Kalibrierung und erreichter Frequenz.
-Eine spätere Implementierung muss festlegen, ob sie die Schätzung oder die
-Anzeige der Herstelleroberfläche nachbildet.
+Was die Filterseite der Oberfläche (`com/fltr/t/filterOverview.html`) als Zahl
+anzeigt, hängt vom Modus ab:
+
+| Modus | `pumpMode & 0xFF` | Anzeige |
+| --- | --- | --- |
+| Konstanter Durchfluss | 1 | Durchfluss-Tabellenwert zu `sollStep`, ab `freq >= maxFreq` der Basiswert |
+| Bio | 4 | wie konstanter Durchfluss |
+| Puls | 8 | keine Zahl |
+| Manuell | 16 | kein Durchfluss, Drehzahl in Prozent der höchsten Tabellenfrequenz |
+
+Die Integration bildet diese Anzeige nicht nach. Sie gibt den Basiswert aus.
+Ergibt er bei laufender Pumpe 0, liefert sie den Nennwert der aktuellen Frequenz.
+Dafür paart sie die beiden Tabellen `getFrqTable` und `getDSTTableMetric` Stufe
+für Stufe und interpoliert zwischen den Stufen. Diese Paarung ist eine Annahme
+der Integration: Die Oberfläche rechnet Frequenz und Durchfluss nicht ineinander
+um. Der Nennwert berücksichtigt keine Verschmutzung. Beim 350er ergibt er für
+35 Hz 400 l/h, also deutlich mehr als die 143 l/h aus der ersten Messung.
 
 Auch die Leistungsanzeige der Oberfläche stammt aus einer Berechnung anhand
 von Frequenz und `dfsFaktor`. Sie belegt keine Leistungsmessung in Watt.

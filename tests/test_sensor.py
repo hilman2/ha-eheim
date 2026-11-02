@@ -1,3 +1,4 @@
+# Copyright (c) 2026 Manuel Hilgert <hilman2@gmail.com>
 """Tests for the sensor module."""
 
 from unittest.mock import MagicMock, patch
@@ -215,6 +216,12 @@ async def test_state_update(
         ),
         pytest.param(
             {"freq": 3500, "dfsFaktor": 683}, FILTER_FLOW_ENTITY_ID, "143", id="flow"
+        ),
+        pytest.param(
+            {"freq": 3500, "dfsFaktor": 0},
+            FILTER_FLOW_ENTITY_ID,
+            "400",
+            id="flow_without_factor",
         ),
         pytest.param(
             {"freq": 3500, "dfsFaktor": 683, "filterActive": 0},
